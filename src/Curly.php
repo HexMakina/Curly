@@ -107,11 +107,11 @@ class Curly
 
         foreach ($m[1] as $err_code) {
             $err_code_int = (int) $err_code;
-            $ret [] = $this->formatLine($err_code_int, $m[2][$err_code_int - $delta]);
+            $ret [] = self::formatLine($err_code_int, $m[2][$err_code_int - $delta]);
 
             if (strlen($err_code) == 5) {
                 // "75-76" & "50-51"
-                $ret [] = $this->formatLine($err_code_int + 1, $m[2][$err_code_int - $delta]);
+                $ret [] = self::formatLine($err_code_int + 1, $m[2][$err_code_int - $delta]);
                 ++$delta;
             }
         }
@@ -121,7 +121,7 @@ class Curly
         file_put_contents('./CurlyErrorMessages.php', $code);
     }
 
-    private function formatLine(int $code, string $message): string
+    private static function formatLine(int $code, string $message): string
     {
         return sprintf("%d => '%s'", $code, addslashes($message));
     }
