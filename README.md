@@ -1,0 +1,2 @@
+# Curly
+libcurl OOPHP wrapper
