@@ -1,4 +1,6 @@
-<?php return [0 => 'All fine. Proceed as usual.',
+<?php
+
+return [0 => 'All fine. Proceed as usual.',
 1 => 'The URL you passed to libcurl used a protocol that this libcurl does not support. The support might be a compile-time option that you did not use, it can be a misspelled protocol string or just a protocol libcurl has no code for.',
 2 => 'Early initialization code failed. This is likely to be an internal error or problem, or a resource problem where something fundamental could not get done at init time.',
 3 => 'The URL was not properly formatted.',
@@ -98,4 +100,3 @@
 97 => 'Proxy handshake error. CURLINFO_PROXY_ERROR provides extra details on the specific problem.',
 98 => 'SSL Client Certificate required.',
 99 => 'An internal call to poll() or select() returned error that is not recoverable.'];
-?>
