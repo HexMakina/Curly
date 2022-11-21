@@ -6,7 +6,7 @@ class Curly
   /**
    * @var resource
    */
-  private $curl_handle;
+   private $curl_handle;
 
   /**
    * @param array<string,string> $options
@@ -39,17 +39,29 @@ class Curly
 
   public function fetch() : string
   {
+      $result = curl_exec($this->curl_handle);
+      curl_close($this->curl_handle);
 
-    $result = curl_exec($this->curl_handle);
+      return is_bool($result) ? '' : $result;
+  }
 
-    curl_close ($this->curl_handle);
+  public function errno() : int
+  {
+      return curl_errno($this->curl_handle);
+  }
 
-    return is_bool($result) ? '' : $result;
+  public function error() : string
+  {
+    if(!file_exists('CurlyErrorMessages.php')){
+        $this->generateErrorMessageFile();
+    }
+
+    $err = require_once('CurlyErrorMessages.php');
+    return $err[$this->errno()];
   }
 
   public function fetchToFile(string $path): void
   {
-
     $fp = fopen($path, "wb");
 
     if($fp === false)
@@ -77,6 +89,41 @@ class Curly
         'Accept-Language: en-us,en;q=0.5',
         'Pragma: '
       ];
+  }
+
+  private function generateErrorMessageFile() : void
+  {
+    // https://curl.se/libcurl/c/libcurl-errors.html
+    $site = file_get_contents('./site_dump.txt');
+    if($site === false)
+        throw new \Exception("file_get_contents('./site_dump.txt') failure");
+
+    preg_match_all('#\(([0-9-]+)\)[\s]+(.+)#', $site, $m);
+
+    $ret = [];
+    $delta = 0;
+
+    foreach($m[1] as $err_code)
+    {
+      $err_code_int = (int) $err_code;
+      $ret []= $this->formatLine($err_code_int, $m[2][$err_code_int-$delta]);
+
+      if(strlen($err_code)==5){
+        // "75-76" & "50-51"
+        $ret []= $this->formatLine($err_code_int+1, $m[2][$err_code_int-$delta]);
+        ++$delta;
+      }
+    }
+
+    $code = implode(','.PHP_EOL, $ret);
+    $code = sprintf("<?php return [%s];%s?>", $code, PHP_EOL);
+    file_put_contents('./CurlyErrorMessages.php', $code);
+
+  }
+
+  private function formatLine(int $code, string $message) : string
+  {
+    return sprintf("%d => '%s'", $code, addslashes($message));
   }
 }
 ?>
