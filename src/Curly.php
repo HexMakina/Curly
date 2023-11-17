@@ -115,9 +115,10 @@ class Curly
                 ++$delta;
             }
         }
+        $comment = sprintf('// this file was generated using %s::%s', __CLASS__,__FUNCTION__).PHP_EOL;
+        $code = PHP_EOL.implode(',' . PHP_EOL, $ret);
 
-        $code = implode(',' . PHP_EOL, $ret);
-        $code = sprintf("<?php %s return [%s];", PHP_EOL.PHP_EOL, $code, PHP_EOL);
+        $code = sprintf("<?php %s return [%s];", $comment);
         file_put_contents('./CurlyErrorMessages.php', $code);
     }
 
